@@ -31,6 +31,7 @@ class ModulesServiceProvider extends PackageServiceProvider
     {
         $this->app->register(LaravelModulesServiceProvider::class);
         $this->app->singleton('coolsam-modules', Modules::class);
+        $navItems = [];
         $this->app->afterResolving('filament', function () {
             foreach (Filament::getPanels() as $panel) {
                 $id = \Str::of($panel->getId());
@@ -52,8 +53,18 @@ class ModulesServiceProvider extends PackageServiceProvider
                                       </a>'
                             ),
                         );
+                     $navItems[] =
+                        NavigationItem::make($title)
+                            ->url($panel->getUrl(), shouldOpenInNewTab: false)
+                            ->icon('heroicon-o-presentation-chart-line')
+                            ->group('Modules')
+                            ->sort(3)
+                    ;
+                }else{
+                    $admiPanel = $panel;
                 }
             }
+            $admiPanel->navigationItems($navItems);
         });
 
         return parent::register();
